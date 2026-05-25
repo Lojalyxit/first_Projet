@@ -46,10 +46,14 @@ form.addEventListener("submit", async (e) => {
       show(successMsg, "Account created! Check your email to confirm, then sign in.");
     }
   } else {
-    const { error } = await client.auth.signInWithPassword({ email, password });
+    const { data, error } = await client.auth.signInWithPassword({ email, password });
     if (error) {
       show(errorMsg, error.message);
     } else {
+      await client.from("login_events").insert({
+        user_id: data.user.id,
+        email: data.user.email,
+      });
       window.location.href = "dashboard.html";
     }
   }
